@@ -21,3 +21,17 @@ export function reactive(raw) {
     },
   });
 }
+
+export function readonly(raw) {
+  return new Proxy(raw, {
+    get(target, key) {
+      const res = Reflect.get(target, key);
+      track(target, key);
+      return res;
+    },
+    set(target) {
+      console.warn(`${target}是 readonly 的，不能设置值`);
+      return true;
+    },
+  });
+}

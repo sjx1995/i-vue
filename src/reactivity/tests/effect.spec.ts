@@ -71,7 +71,6 @@ describe("effect", () => {
     expect(dummy).toBe(2);
     // 调用stop，停止触发副作用函数
     stop(runner);
-    console.log("add");
     obj.foo = 3;
     expect(dummy).toBe(2);
     // 手动触发副作用函数
