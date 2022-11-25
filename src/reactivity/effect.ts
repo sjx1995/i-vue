@@ -7,6 +7,7 @@ let activeEffect;
 class ReactiveEffect {
   private _fn: (...args: any[]) => any;
   deps: any[];
+  onStop?: () => void;
   constructor(fn) {
     this._fn = fn;
     this.deps = [];
@@ -17,6 +18,9 @@ class ReactiveEffect {
     return result;
   }
   stop() {
+    if (this.onStop) {
+      this.onStop();
+    }
     this.deps.forEach((dep) => {
       dep.delete(this);
     });
@@ -55,7 +59,6 @@ export function trigger(target, key) {
 }
 
 export function stop(fn) {
-  console.log("stop");
   fn.effect.stop();
 }
 
