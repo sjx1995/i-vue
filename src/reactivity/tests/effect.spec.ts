@@ -20,4 +20,16 @@ describe("effect", () => {
     obj.foo++;
     expect(bar).toBe(2);
   });
+
+  it("返回一个runner", () => {
+    let foo = 1;
+    const runner = effect(() => {
+      foo++;
+      return "foo";
+    });
+    expect(foo).toBe(2);
+    const res = runner();
+    expect(foo).toBe(3);
+    expect(res).toBe("foo");
+  });
 });
