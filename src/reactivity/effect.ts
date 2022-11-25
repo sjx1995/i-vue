@@ -7,6 +7,7 @@ let activeEffect;
 class ReactiveEffect {
   private _fn: (...args: any[]) => any;
   deps: any[];
+  isActive = true;
   onStop?: () => void;
   constructor(fn) {
     this._fn = fn;
@@ -18,13 +19,20 @@ class ReactiveEffect {
     return result;
   }
   stop() {
-    if (this.onStop) {
-      this.onStop();
+    if (this.isActive) {
+      cleanup(this);
+      this.isActive = false;
     }
-    this.deps.forEach((dep) => {
-      dep.delete(this);
-    });
   }
+}
+
+function cleanup(effect) {
+  if (effect.onStop) {
+    effect.onStop();
+  }
+  effect.deps.forEach((dep) => {
+    dep.delete(effect);
+  });
 }
 
 const bucket = new WeakMap();
