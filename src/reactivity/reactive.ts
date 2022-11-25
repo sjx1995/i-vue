@@ -5,9 +5,16 @@
  */
 import { track, trigger } from "./effect";
 
+export const enum ReactiveFlags {
+  IS_READONLY = "__v_isReadonly",
+}
+
 export function reactive(raw) {
   return new Proxy(raw, {
     get(target, key) {
+      if (key === ReactiveFlags.IS_READONLY) {
+        return false;
+      }
       const res = Reflect.get(target, key);
       // 追踪依赖
       track(target, key);
@@ -25,6 +32,9 @@ export function reactive(raw) {
 export function readonly(raw) {
   return new Proxy(raw, {
     get(target, key) {
+      if (key === ReactiveFlags.IS_READONLY) {
+        return true;
+      }
       const res = Reflect.get(target, key);
       track(target, key);
       return res;
@@ -34,4 +44,8 @@ export function readonly(raw) {
       return true;
     },
   });
+}
+
+export function isReadonly(value) {
+  return !!value[ReactiveFlags.IS_READONLY];
 }
