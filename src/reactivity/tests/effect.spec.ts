@@ -3,7 +3,7 @@
  * @Author: Sunly
  * @Date: 2022-10-15 19:10:40
  */
-import { effect } from "../effect";
+import { effect, stop } from "../effect";
 import { reactive } from "../reactive";
 
 describe("effect", () => {
@@ -58,5 +58,24 @@ describe("effect", () => {
     // 副作用函数正常执行
     runner();
     expect(dummy).toBe(2);
+  });
+
+  it("stop", () => {
+    let dummy;
+    const obj = reactive({ foo: 1 });
+    const runner = effect(() => {
+      dummy = obj.foo;
+    });
+    // 正确触发副作用函数
+    obj.foo = 2;
+    expect(dummy).toBe(2);
+    // 调用stop，停止触发副作用函数
+    stop(runner);
+    console.log("add");
+    obj.foo = 3;
+    expect(dummy).toBe(2);
+    // 手动触发副作用函数
+    runner();
+    expect(dummy).toBe(3);
   });
 });
