@@ -7,6 +7,7 @@ import { track, trigger } from "./effect";
 
 export const enum ReactiveFlags {
   IS_READONLY = "__v_isReadonly",
+  IS_REACTIVE = "__v_isReactive",
 }
 
 export function reactive(raw) {
@@ -14,6 +15,9 @@ export function reactive(raw) {
     get(target, key) {
       if (key === ReactiveFlags.IS_READONLY) {
         return false;
+      }
+      if (key === ReactiveFlags.IS_REACTIVE) {
+        return true;
       }
       const res = Reflect.get(target, key);
       // 追踪依赖
@@ -35,6 +39,9 @@ export function readonly(raw) {
       if (key === ReactiveFlags.IS_READONLY) {
         return true;
       }
+      if (key === ReactiveFlags.IS_REACTIVE) {
+        return false;
+      }
       const res = Reflect.get(target, key);
       track(target, key);
       return res;
@@ -48,4 +55,8 @@ export function readonly(raw) {
 
 export function isReadonly(value) {
   return !!value[ReactiveFlags.IS_READONLY];
+}
+
+export function isReactive(value) {
+  return !!value[ReactiveFlags.IS_REACTIVE];
 }
