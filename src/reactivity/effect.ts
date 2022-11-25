@@ -6,8 +6,10 @@
 let activeEffect;
 class ReactiveEffect {
   private _fn: (...args: any[]) => any;
-  constructor(fn) {
+  public options: any;
+  constructor(fn, opt) {
     this._fn = fn;
+    this.options = opt;
   }
   run() {
     activeEffect = this;
@@ -34,11 +36,18 @@ export function trigger(target, key) {
   const depsMap = bucket.get(target);
   if (!depsMap) return;
   const deps = depsMap.get(key);
-  deps && deps.forEach((effect) => effect.run());
+  deps &&
+    deps.forEach((effect) => {
+      if (effect.options.scheduler) {
+        effect.options.scheduler();
+      } else {
+        effect.run();
+      }
+    });
 }
 
-export function effect(fn) {
-  const reactiveEffect = new ReactiveEffect(fn);
+export function effect(fn, opt = {}) {
+  const reactiveEffect = new ReactiveEffect(fn, opt);
   reactiveEffect.run();
   return fn;
 }
