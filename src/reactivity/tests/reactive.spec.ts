@@ -22,4 +22,20 @@ describe("reactive", () => {
     expect(isReactive(reactiveObj)).toBe(true);
     expect(isReactive(readonlyObj)).toBe(false);
   });
+
+  it("嵌套的reactive", () => {
+    const reactiveObj = reactive({
+      foo: {
+        val: 1,
+      },
+      bar: {
+        baz: [{ val: 1 }],
+      },
+    });
+    expect(isReactive(reactiveObj)).toBe(true);
+    expect(isReactive(reactiveObj.foo)).toBe(true);
+    expect(isReactive(reactiveObj.bar)).toBe(true);
+    expect(isReactive(reactiveObj.bar.baz)).toBe(true);
+    expect(isReactive(reactiveObj.bar.baz[0])).toBe(true);
+  });
 });

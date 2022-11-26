@@ -4,7 +4,8 @@
  * @Date: 2022-11-25 10:02:51
  */
 import { track, trigger } from "./effect";
-import { ReactiveFlags } from "./reactive";
+import { reactive, ReactiveFlags } from "./reactive";
+import { isObject } from "../shared/index";
 
 function createGetter(isReadonly = false) {
   return function (target, key) {
@@ -14,6 +15,9 @@ function createGetter(isReadonly = false) {
       return !isReadonly;
     }
     const res = Reflect.get(target, key);
+    if (isObject(res)) {
+      return reactive(res);
+    }
     if (!isReadonly) {
       track(target, key);
     }
