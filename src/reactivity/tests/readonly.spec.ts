@@ -26,4 +26,20 @@ describe("readonly", () => {
     expect(isReadonly(original)).toBe(false);
     expect(isReadonly(readonlyObj)).toBe(true);
   });
+
+  it("嵌套的readonly", () => {
+    const readonlyObj = readonly({
+      foo: {
+        val: 1,
+      },
+      bar: {
+        baz: [{ val: 1 }],
+      },
+    });
+    expect(isReadonly(readonlyObj)).toBe(true);
+    expect(isReadonly(readonlyObj.foo)).toBe(true);
+    expect(isReadonly(readonlyObj.bar)).toBe(true);
+    expect(isReadonly(readonlyObj.bar.baz)).toBe(true);
+    expect(isReadonly(readonlyObj.bar.baz[0])).toBe(true);
+  });
 });
