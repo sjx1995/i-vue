@@ -94,4 +94,16 @@ describe("effect", () => {
     stop(runner);
     expect(onStop).toBeCalledTimes(1);
   });
+
+  it("stop 的 edge case", () => {
+    const obj = reactive({ foo: 1 });
+    let dummy;
+    const runner = effect(() => {
+      dummy = obj.foo;
+    });
+    stop(runner);
+    // 会触发effect重新track已经删除的依赖
+    obj.foo++;
+    expect(dummy).toBe(1);
+  });
 });

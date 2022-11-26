@@ -4,6 +4,7 @@
  * @Date: 2022-10-15 21:06:59
  */
 let activeEffect;
+let shouldTrack = false;
 class ReactiveEffect {
   private _fn: (...args: any[]) => any;
   deps: any[];
@@ -14,8 +15,13 @@ class ReactiveEffect {
     this.deps = [];
   }
   run() {
+    if (!this.isActive) {
+      return this._fn();
+    }
+    shouldTrack = true;
     activeEffect = this;
     const result = this._fn();
+    shouldTrack = false;
     return result;
   }
   stop() {
@@ -38,6 +44,7 @@ function cleanup(effect) {
 const bucket = new WeakMap();
 export function track(target, key) {
   if (!activeEffect) return;
+  if (!shouldTrack) return;
   let depsMap = bucket.get(target);
   if (!depsMap) {
     depsMap = new Map();
