@@ -102,7 +102,7 @@ describe("effect", () => {
       dummy = obj.foo;
     });
     stop(runner);
-    // 会触发effect重新track已经删除的依赖
+    // 会触发getter和effect重新track已经删除的依赖
     obj.foo++;
     expect(dummy).toBe(1);
   });

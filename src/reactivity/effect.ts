@@ -39,12 +39,12 @@ function cleanup(effect) {
   effect.deps.forEach((dep) => {
     dep.delete(effect);
   });
+  effect.deps.length = 0;
 }
 
 const bucket = new WeakMap();
 export function track(target, key) {
-  if (!activeEffect) return;
-  if (!shouldTrack) return;
+  if (!isTracking()) return;
   let depsMap = bucket.get(target);
   if (!depsMap) {
     depsMap = new Map();
@@ -55,8 +55,13 @@ export function track(target, key) {
     deps = new Set();
     depsMap.set(key, deps);
   }
+  if (deps.has(activeEffect)) return;
   deps.add(activeEffect);
   activeEffect.deps.push(deps);
+}
+
+function isTracking() {
+  return shouldTrack && activeEffect !== undefined;
 }
 
 export function trigger(target, key) {
