@@ -1,3 +1,5 @@
+import { extend } from "../shared";
+
 /*
  * @Description: effect
  * @Author: Sunly
@@ -84,7 +86,7 @@ export function stop(fn) {
 
 export function effect(fn, opt = {}) {
   const reactiveEffect = new ReactiveEffect(fn);
-  Object.assign(reactiveEffect, opt);
+  extend(reactiveEffect, opt);
   reactiveEffect.run();
   const runner: any = reactiveEffect.run.bind(reactiveEffect);
   runner.effect = reactiveEffect;

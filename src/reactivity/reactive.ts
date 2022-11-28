@@ -3,7 +3,11 @@
  * @Author: Sunly
  * @Date: 2022-11-25 02:22:38
  */
-import { mutableHandlers, readonlyHandlers } from "./baseHandler";
+import {
+  mutableHandlers,
+  readonlyHandlers,
+  shallowReadonlyHandlers,
+} from "./baseHandler";
 
 export const enum ReactiveFlags {
   IS_READONLY = "__v_isReadonly",
@@ -20,6 +24,10 @@ export function reactive(raw) {
 
 export function readonly(raw) {
   return createReactiveObject(raw, readonlyHandlers);
+}
+
+export function shallowReadonly(raw) {
+  return createReactiveObject(raw, shallowReadonlyHandlers);
 }
 
 export function isReadonly(value) {
