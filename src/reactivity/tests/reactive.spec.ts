@@ -3,7 +3,7 @@
  * @Author: Sunly
  * @Date: 2022-10-15 19:48:53
  */
-import { isReactive, reactive, readonly } from "../reactive";
+import { isReactive, reactive, readonly, isProxy } from "../reactive";
 
 describe("reactive", () => {
   it("happy path", () => {
@@ -37,5 +37,12 @@ describe("reactive", () => {
     expect(isReactive(reactiveObj.bar)).toBe(true);
     expect(isReactive(reactiveObj.bar.baz)).toBe(true);
     expect(isReactive(reactiveObj.bar.baz[0])).toBe(true);
+  });
+
+  it("isProxy检测是不是reactive对象", () => {
+    const original = { foo: 1 };
+    const reactiveObj = reactive(original);
+    expect(isProxy(original)).toBe(false);
+    expect(isProxy(reactiveObj)).toBe(true);
   });
 });

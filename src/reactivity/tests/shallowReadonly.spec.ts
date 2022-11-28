@@ -3,7 +3,7 @@
  * @Author: Sunly
  * @Date: 2022-11-28 05:06:37
  */
-import { isReadonly, shallowReadonly } from "../reactive";
+import { isReadonly, shallowReadonly, isProxy } from "../reactive";
 
 describe("shallowReadonly", () => {
   it("shallowReadonly", () => {
@@ -19,5 +19,12 @@ describe("shallowReadonly", () => {
     expect(console.warn).not.toBeCalled();
     shallowReadonlyObj.foo = { baz: 2 };
     expect(console.warn).toBeCalledTimes(1);
+  });
+
+  it("isProxy检测是不是shallowReadonly对象", () => {
+    const original = { foo: 1 };
+    const shallowReadonlyObj = shallowReadonly(original);
+    expect(isProxy(original)).toBe(false);
+    expect(isProxy(shallowReadonlyObj)).toBe(true);
   });
 });

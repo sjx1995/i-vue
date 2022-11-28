@@ -3,7 +3,7 @@
  * @Author: Sunly
  * @Date: 2022-11-25 08:37:01
  */
-import { readonly, isReadonly } from "../reactive";
+import { readonly, isReadonly, isProxy } from "../reactive";
 
 describe("readonly", () => {
   it("实现readonly", () => {
@@ -41,5 +41,12 @@ describe("readonly", () => {
     expect(isReadonly(readonlyObj.bar)).toBe(true);
     expect(isReadonly(readonlyObj.bar.baz)).toBe(true);
     expect(isReadonly(readonlyObj.bar.baz[0])).toBe(true);
+  });
+
+  it("isProxy检测是不是readonly对象", () => {
+    const original = { foo: 1 };
+    const readonlyObj = readonly(original);
+    expect(isProxy(original)).toBe(false);
+    expect(isProxy(readonlyObj)).toBe(true);
   });
 });
