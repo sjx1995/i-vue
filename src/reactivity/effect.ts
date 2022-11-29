@@ -52,26 +52,34 @@ export function track(target, key) {
     depsMap = new Map();
     bucket.set(target, depsMap);
   }
-  let deps = depsMap.get(key);
-  if (!deps) {
-    deps = new Set();
-    depsMap.set(key, deps);
+  let dep = depsMap.get(key);
+  if (!dep) {
+    dep = new Set();
+    depsMap.set(key, dep);
   }
-  if (deps.has(activeEffect)) return;
-  deps.add(activeEffect);
-  activeEffect.deps.push(deps);
+  trackEffect(dep);
 }
 
-function isTracking() {
+export function trackEffect(dep) {
+  if (dep.has(activeEffect)) return;
+  dep.add(activeEffect);
+  activeEffect.deps.push(dep);
+}
+
+export function isTracking() {
   return shouldTrack && activeEffect !== undefined;
 }
 
 export function trigger(target, key) {
   const depsMap = bucket.get(target);
   if (!depsMap) return;
-  const deps = depsMap.get(key);
-  deps &&
-    deps.forEach((effect) => {
+  const dep = depsMap.get(key);
+  triggerEffect(dep);
+}
+
+export function triggerEffect(dep) {
+  dep &&
+    dep.forEach((effect) => {
       if (effect.scheduler) {
         effect.scheduler();
       } else {
