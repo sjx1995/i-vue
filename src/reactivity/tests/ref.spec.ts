@@ -4,7 +4,8 @@
  * @Date: 2022-11-29 11:03:19
  */
 import { effect } from "../effect";
-import { ref } from "../ref";
+import { reactive } from "../reactive";
+import { isRef, ref } from "../ref";
 
 describe("ref", () => {
   it("happy path", () => {
@@ -46,5 +47,13 @@ describe("ref", () => {
     expect(dummy).toBe(1);
     data.value.foo = 2;
     expect(dummy).toBe(2);
+  });
+
+  it("实现isRef", () => {
+    const data = ref(1);
+    const reactiveObj = reactive({ foo: 1 });
+    expect(isRef(data)).toBe(true);
+    expect(isRef(1)).toBe(false);
+    expect(isRef(reactiveObj)).toBe(false);
   });
 });

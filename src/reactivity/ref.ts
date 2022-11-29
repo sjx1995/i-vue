@@ -11,9 +11,11 @@ class refImpl {
   private _refValue: any;
   _dep: Set<any>;
   private _rawValue;
+  _v__isRef: true;
   constructor(refValue) {
     this._refValue = convert(refValue);
     this._dep = new Set();
+    this._v__isRef = true;
   }
   get value() {
     if (isTracking()) {
@@ -36,4 +38,8 @@ function convert(value) {
 
 export function ref(raw) {
   return new refImpl(raw);
+}
+
+export function isRef(raw) {
+  return !!raw._v__isRef;
 }
