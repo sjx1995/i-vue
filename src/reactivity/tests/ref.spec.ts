@@ -5,7 +5,7 @@
  */
 import { effect } from "../effect";
 import { reactive } from "../reactive";
-import { isRef, ref } from "../ref";
+import { isRef, ref, unRef } from "../ref";
 
 describe("ref", () => {
   it("happy path", () => {
@@ -55,5 +55,11 @@ describe("ref", () => {
     expect(isRef(data)).toBe(true);
     expect(isRef(1)).toBe(false);
     expect(isRef(reactiveObj)).toBe(false);
+  });
+
+  it("实现unRef", () => {
+    const data = ref(1);
+    expect(unRef(data)).toBe(1);
+    expect(unRef(1)).toBe(1);
   });
 });

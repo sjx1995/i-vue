@@ -43,3 +43,7 @@ export function ref(raw) {
 export function isRef(raw) {
   return !!raw._v__isRef;
 }
+
+export function unRef(raw) {
+  return isRef(raw) ? raw.value : raw;
+}
