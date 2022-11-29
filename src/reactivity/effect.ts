@@ -7,12 +7,14 @@ import { extend } from "../shared";
  */
 let activeEffect;
 let shouldTrack = false;
-class ReactiveEffect {
+export class ReactiveEffect {
   private _fn: (...args: any[]) => any;
   deps: any[];
   isActive = true;
   onStop?: () => void;
-  constructor(fn) {
+  scheduler?: Function;
+  constructor(fn, scheduler?: Function) {
+    this.scheduler = scheduler;
     this._fn = fn;
     this.deps = [];
   }
@@ -92,8 +94,8 @@ export function stop(fn) {
   fn.effect.stop();
 }
 
-export function effect(fn, opt = {}) {
-  const reactiveEffect = new ReactiveEffect(fn);
+export function effect(fn, opt: any = {}) {
+  const reactiveEffect = new ReactiveEffect(fn, opt.scheduler);
   extend(reactiveEffect, opt);
   reactiveEffect.run();
   const runner: any = reactiveEffect.run.bind(reactiveEffect);

@@ -47,3 +47,24 @@ export function isRef(raw) {
 export function unRef(raw) {
   return isRef(raw) ? raw.value : raw;
 }
+
+export function proxyRefs(objectWithRefs) {
+  return new Proxy(objectWithRefs, {
+    // 获取值的时候使用unRef，去掉value
+    get(target, key) {
+      return unRef(Reflect.get(target, key));
+    },
+    // 设置值的时候，如果原来的值是ref而且新的值不是ref，直接修改.value
+    // 否则，老值不是ref或者新值是ref，都直接使用setter
+    set(target, key, newVal) {
+      const oldVal = target[key];
+      if (isRef(oldVal) && !isRef(newVal)) {
+        oldVal.value = newVal;
+        return true;
+      } else {
+        Reflect.set(target, key, newVal);
+      }
+      return true;
+    },
+  });
+}

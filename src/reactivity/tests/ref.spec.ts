@@ -5,7 +5,7 @@
  */
 import { effect } from "../effect";
 import { reactive } from "../reactive";
-import { isRef, ref, unRef } from "../ref";
+import { isRef, proxyRefs, ref, unRef } from "../ref";
 
 describe("ref", () => {
   it("happy path", () => {
@@ -61,5 +61,26 @@ describe("ref", () => {
     const data = ref(1);
     expect(unRef(data)).toBe(1);
     expect(unRef(1)).toBe(1);
+  });
+
+  // 在js中要使用.value来取值，但是模板中就不需要
+  // 这就是proxyRefs的作用
+  it("实现proxyRefs", () => {
+    const data = {
+      foo: 1,
+      bar: ref(2),
+    };
+    const proxyData = proxyRefs(data);
+    expect(data.bar.value).toBe(2);
+    expect(proxyData.foo).toBe(1);
+    expect(proxyData.bar).toBe(2);
+
+    proxyData.bar = 3;
+    expect(data.bar.value).toBe(3);
+    expect(proxyData.bar).toBe(3);
+
+    proxyData.bar = ref(4);
+    expect(data.bar.value).toBe(4);
+    expect(proxyData.bar).toBe(4);
   });
 });
