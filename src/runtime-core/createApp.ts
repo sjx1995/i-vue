@@ -11,6 +11,9 @@ export function createApp(rootComponent) {
     mount(rootContainer) {
       // 转换成虚拟节点，之后所有的操作都基于虚拟节点
       const vnode = createVNode(rootComponent);
+      if (typeof rootContainer === "string") {
+        rootContainer = document.querySelector(rootContainer);
+      }
       render(vnode, rootContainer);
     },
   };
