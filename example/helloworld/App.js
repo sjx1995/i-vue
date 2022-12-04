@@ -7,7 +7,17 @@ import { h } from "../../lib/i-vue.esm.js";
 
 export const App = {
   render() {
-    return h("div", `hello ${this.msg}`);
+    return h(
+      "div",
+      {
+        id: "root",
+        class: ["main", "main-container"],
+      },
+      [
+        h("span", { class: "red" }, "hello"),
+        h("span", { class: "blue" }, " world"),
+      ]
+    );
   },
   setup() {
     return {
