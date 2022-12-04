@@ -5,8 +5,10 @@
  */
 import { h } from "../../lib/i-vue.esm.js";
 
+window.self = null;
 export const App = {
   render() {
+    window.self = this;
     return h(
       "div",
       {

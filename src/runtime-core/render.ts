@@ -29,6 +29,7 @@ function processComponent(vnode, container) {
 function mountElement(vnode, container) {
   const { type, props, children } = vnode;
   const el = document.createElement(type);
+  vnode.el = el;
   if (props) {
     for (const key in props) {
       const value = props[key];
@@ -56,11 +57,14 @@ function mountComponent(vnode, container) {
 
   // 初始化组件
   setupComponent(instance);
-  setupRenderEffect(instance, container);
+  setupRenderEffect(instance, vnode, container);
 }
 
-function setupRenderEffect(instance, container) {
+function setupRenderEffect(instance, vnode, container) {
   const { proxy } = instance;
   const subTree = instance.render.call(proxy);
+
   patch(subTree, container);
+
+  vnode.el = subTree.el;
 }
