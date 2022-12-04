@@ -22,6 +22,18 @@ function setupStatefulComponent(instance) {
   const Component = instance.type;
   const { setup } = Component;
 
+  instance.proxy = new Proxy(
+    {},
+    {
+      get(target, key) {
+        const { setupState } = instance;
+        if (key in setupState) {
+          return setupState[key];
+        }
+      },
+    }
+  );
+
   if (setup) {
     const setupResult = setup();
     handleSetupResult(instance, setupResult);

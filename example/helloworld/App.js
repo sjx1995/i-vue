@@ -16,6 +16,7 @@ export const App = {
       [
         h("span", { class: "red" }, "hello"),
         h("span", { class: "blue" }, " world"),
+        h("div", {}, `hello ${this.msg}`),
       ]
     );
   },

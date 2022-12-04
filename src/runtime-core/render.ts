@@ -27,7 +27,6 @@ function processComponent(vnode, container) {
 }
 
 function mountElement(vnode, container) {
-  console.log(vnode);
   const { type, props, children } = vnode;
   const el = document.createElement(type);
   if (props) {
@@ -61,6 +60,7 @@ function mountComponent(vnode, container) {
 }
 
 function setupRenderEffect(instance, container) {
-  const subTree = instance.render();
+  const { proxy } = instance;
+  const subTree = instance.render.call(proxy);
   patch(subTree, container);
 }
