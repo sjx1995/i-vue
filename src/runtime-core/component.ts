@@ -21,11 +21,10 @@ export function setupComponent(instance) {
 }
 
 function setupStatefulComponent(instance) {
-  const Component = instance.type;
-  const { setup } = Component;
-
   instance.proxy = new Proxy({ _: instance }, componentPublicInstanceHandlers);
 
+  const Component = instance.type;
+  const { setup } = Component;
   if (setup) {
     const setupResult = setup();
     handleSetupResult(instance, setupResult);

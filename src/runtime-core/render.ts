@@ -56,15 +56,21 @@ function processComponent(vnode, container) {
 function mountComponent(vnode, container) {
   // 创建组件实例
   // 实例上会存储必要的属性
+  // 在instance上挂载vnode、type
   const instance = createComponentInstance(vnode);
 
   // 初始化组件
+  // 挂载setupState
+  // 挂载组件代理对象proxy
+  // 挂载render
   setupComponent(instance);
+  // 取出组件代理对象proxy，绑定其为this执行render
   setupRenderEffect(instance, vnode, container);
 }
 
 function setupRenderEffect(instance, vnode, container) {
   const { proxy } = instance;
+  // 执行完render函数之后，返回的是根节点的vnode对象
   const subTree = instance.render.call(proxy);
 
   patch(subTree, container);

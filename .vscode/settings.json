@@ -1,3 +1,4 @@
 {
-  "remote.downloadExtensionsLocally": false
+  "remote.downloadExtensionsLocally": false,
+  "liveServer.settings.port": 5501
 }
