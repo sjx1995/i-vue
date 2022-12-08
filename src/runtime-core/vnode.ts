@@ -3,14 +3,30 @@
  * @Author: Sunly
  * @Date: 2022-12-01 02:41:30
  */
-// 如果是component，那么只有type有值，值是一个对象
-// 如果是element，那么参数就是熟悉的h函数的参数
+import { ShapeFlags } from "../shared/shapeFlags";
+
+// 如果是component，那么type值是一个对象，里面包含了setup()、render()等函数
+// 如果是element，那么type值是一个标签名
 export function createVNode(type, props?, children?) {
   const vnode = {
     type,
     props,
     children,
     el: null,
+    shapeFlags: getShapeFlag(type),
   };
+
+  if (typeof children === "string") {
+    vnode.shapeFlags |= ShapeFlags.TEXT_CHILDREN;
+  } else if (Array.isArray(children)) {
+    vnode.shapeFlags |= ShapeFlags.ARRAY_CHILDREN;
+  }
+
   return vnode;
+}
+
+function getShapeFlag(type) {
+  return typeof type === "string"
+    ? ShapeFlags.ELEMENT
+    : ShapeFlags.STATEFUL_COMPONENT;
 }
