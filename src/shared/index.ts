@@ -12,3 +12,7 @@ export const extend = Object.assign;
 export function hasChange(newVal, oldVal) {
   return !Object.is(newVal, oldVal);
 }
+
+export function hasOwn(val, key) {
+  return Object.prototype.hasOwnProperty.call(val, key);
+}

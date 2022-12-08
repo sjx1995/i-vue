@@ -3,7 +3,6 @@
  * @Author: Sunly
  * @Date: 2022-12-01 02:56:33
  */
-import { isObject } from "../shared/index";
 import { createComponentInstance, setupComponent } from "./component";
 import { ShapeFlags } from "../shared/shapeFlags";
 
