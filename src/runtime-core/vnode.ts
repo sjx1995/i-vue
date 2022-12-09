@@ -5,6 +5,8 @@
  */
 import { ShapeFlags } from "../shared/shapeFlags";
 
+export const Fragment = Symbol("fragment");
+
 // 如果是component，那么type值是一个对象，里面包含了setup()、render()等函数
 // 如果是element，那么type值是一个标签名
 export function createVNode(type, props?, children?) {

@@ -5,6 +5,7 @@
  */
 import { createComponentInstance, setupComponent } from "./component";
 import { ShapeFlags } from "../shared/shapeFlags";
+import { Fragment } from "./vnode";
 
 export function render(vnode, container) {
   // 方便递归调用
@@ -12,13 +13,21 @@ export function render(vnode, container) {
 }
 
 function patch(vnode, container) {
-  const { shapeFlags } = vnode;
-  if (shapeFlags & ShapeFlags.ELEMENT) {
-    // 处理元素
-    processElement(vnode, container);
-  } else if (shapeFlags & ShapeFlags.STATEFUL_COMPONENT) {
-    // 处理组件
-    processComponent(vnode, container);
+  const { type, shapeFlags } = vnode;
+  switch (type) {
+    case Fragment:
+      mountChildren(vnode.children, container);
+      break;
+
+    default:
+      if (shapeFlags & ShapeFlags.ELEMENT) {
+        // 处理元素
+        processElement(vnode, container);
+      } else if (shapeFlags & ShapeFlags.STATEFUL_COMPONENT) {
+        // 处理组件
+        processComponent(vnode, container);
+      }
+      break;
   }
 }
 
@@ -51,6 +60,7 @@ function mountElement(vnode, container) {
 }
 
 function mountChildren(vnode, container) {
+  console.log(vnode);
   vnode.forEach((v) => {
     patch(v, container);
   });
