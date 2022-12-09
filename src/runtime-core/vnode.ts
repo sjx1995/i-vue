@@ -22,6 +22,13 @@ export function createVNode(type, props?, children?) {
     vnode.shapeFlags |= ShapeFlags.ARRAY_CHILDREN;
   }
 
+  // vnode是个组件，而且第三个参数是对象，说明是个插槽
+  if (vnode.shapeFlags & ShapeFlags.STATEFUL_COMPONENT) {
+    if (typeof children === "object") {
+      vnode.shapeFlags |= ShapeFlags.SLOT_CHILDREN;
+    }
+  }
+
   return vnode;
 }
 

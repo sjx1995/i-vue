@@ -3,9 +3,13 @@
  * @Author: Sunly
  * @Date: 2022-12-09 14:37:46
  */
-export function renderSlot(slots, name) {
+import { createVNode } from "../vnode";
+
+export function renderSlot(slots, name, props) {
   const slot = slots[name];
   if (slot) {
-    return slot;
+    if (typeof slot === "function") {
+      return createVNode("div", {}, [slot(props)]);
+    }
   }
 }
