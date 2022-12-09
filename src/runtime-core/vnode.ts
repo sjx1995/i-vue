@@ -6,6 +6,7 @@
 import { ShapeFlags } from "../shared/shapeFlags";
 
 export const Fragment = Symbol("fragment");
+export const Text = Symbol("Text");
 
 // 如果是component，那么type值是一个对象，里面包含了setup()、render()等函数
 // 如果是element，那么type值是一个标签名
@@ -32,6 +33,10 @@ export function createVNode(type, props?, children?) {
   }
 
   return vnode;
+}
+
+export function createTextNode(text: string) {
+  return createVNode(Text, {}, text);
 }
 
 function getShapeFlag(type) {

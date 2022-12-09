@@ -5,7 +5,7 @@
  */
 import { createComponentInstance, setupComponent } from "./component";
 import { ShapeFlags } from "../shared/shapeFlags";
-import { Fragment } from "./vnode";
+import { Fragment, Text } from "./vnode";
 
 export function render(vnode, container) {
   // 方便递归调用
@@ -19,6 +19,10 @@ function patch(vnode, container) {
       mountChildren(vnode.children, container);
       break;
 
+    case Text:
+      processTextNode(vnode, container);
+      break;
+
     default:
       if (shapeFlags & ShapeFlags.ELEMENT) {
         // 处理元素
@@ -29,6 +33,12 @@ function patch(vnode, container) {
       }
       break;
   }
+}
+
+function processTextNode(vnode, container) {
+  const textNode = document.createTextNode(vnode.children);
+  vnode.el = textNode;
+  container.append(textNode);
 }
 
 function processElement(vnode, container) {
@@ -60,7 +70,6 @@ function mountElement(vnode, container) {
 }
 
 function mountChildren(vnode, container) {
-  console.log(vnode);
   vnode.forEach((v) => {
     patch(v, container);
   });
