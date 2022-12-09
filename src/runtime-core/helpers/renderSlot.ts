@@ -3,6 +3,9 @@
  * @Author: Sunly
  * @Date: 2022-12-09 14:37:46
  */
-export function renderSlot(slot) {
-  return Array.isArray(slot) ? slot : [slot];
+export function renderSlot(slots, name) {
+  const slot = slots[name];
+  if (slot) {
+    return slot;
+  }
 }
