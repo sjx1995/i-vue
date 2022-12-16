@@ -1,0 +1,36 @@
+/*
+ * @Description: DOM平台渲染器
+ * @Author: Sunly
+ * @Date: 2022-12-16 18:13:19
+ */
+import { createRenderer } from "../runtime-core";
+
+function createElement(type) {
+  return document.createElement(type);
+}
+
+function patchProp(el, key, value) {
+  const isOn = (str: string) => /^on[A-Z]/.test(str);
+  if (isOn(key)) {
+    const event = key.slice(2).toLowerCase();
+    el.addEventListener(event, value);
+  } else {
+    el.setAttribute(key, value);
+  }
+}
+
+function insert(el, container) {
+  container.append(el);
+}
+
+const renderer: any = createRenderer({
+  createElement,
+  patchProp,
+  insert,
+});
+
+export function createApp(...args) {
+  return renderer.createApp(...args);
+}
+
+export * from "../runtime-core";
