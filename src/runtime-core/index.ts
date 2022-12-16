@@ -8,3 +8,4 @@ export { h } from "./h";
 export { renderSlot } from "./helpers/renderSlot";
 export { createTextNode } from "./vnode";
 export { getCurrentInstance } from "./component";
+export { inject, provide } from "./apiInject";
