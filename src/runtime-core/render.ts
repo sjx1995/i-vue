@@ -68,7 +68,7 @@ export function createRenderer(options) {
       mountChildren(children, el, parent);
     }
     // insert
-    container.append(el);
+    insert(el, container);
   }
 
   function mountChildren(vnode, container, parent) {
