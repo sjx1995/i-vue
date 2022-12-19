@@ -9,13 +9,17 @@ function createElement(type) {
   return document.createElement(type);
 }
 
-function patchProp(el, key, value) {
+function patchProp(el, key, oldVal, newVal) {
   const isOn = (str: string) => /^on[A-Z]/.test(str);
   if (isOn(key)) {
     const event = key.slice(2).toLowerCase();
-    el.addEventListener(event, value);
+    el.addEventListener(event, newVal);
   } else {
-    el.setAttribute(key, value);
+    if (newVal == null) {
+      el.removeAttribute(key);
+    } else {
+      el.setAttribute(key, newVal);
+    }
   }
 }
 
