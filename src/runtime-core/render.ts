@@ -16,7 +16,7 @@ export function createRenderer(options) {
     patch(null, vnode, container, null);
   }
 
-  const { createElement, patchProp, insert } = options;
+  const { createElement, patchProp, insert, remove, setElementText } = options;
 
   function patch(n1, n2, container, parent) {
     const { type, shapeFlags } = n2;
@@ -66,7 +66,41 @@ export function createRenderer(options) {
     const el = n1.el;
     n2.el = el;
 
+    patchChildren(n1, n2, el, parent);
     patchProps(el, oldProps, newProps);
+  }
+
+  function patchChildren(n1, n2, container, parent) {
+    const { shapeFlags: prevShapeFlag } = n1;
+    const { children: prevChildren } = n1;
+    const { shapeFlags: nextShapeFlag } = n2;
+    const { children: nextChildren } = n2;
+
+    if (prevShapeFlag & ShapeFlags.ARRAY_CHILDREN) {
+      if (nextShapeFlag & ShapeFlags.TEXT_CHILDREN) {
+        // 数组节点 -> 文字节点
+        unmountChildren(prevChildren);
+        setElementText(container, nextChildren);
+      } else {
+        // todo 数组节点->数组节点，要使用diff算法
+      }
+    } else {
+      // 文字节点 -> 文字节点
+      if (nextShapeFlag & ShapeFlags.TEXT_CHILDREN) {
+        setElementText(container, nextChildren);
+      } else {
+        // 文字节点 -> 数组节点
+        setElementText(container, "");
+        mountChildren(nextChildren, container, parent);
+      }
+    }
+  }
+
+  function unmountChildren(children) {
+    for (let i = 0; i < children.length; i++) {
+      const child = children[i];
+      remove(child);
+    }
   }
 
   function patchProps(el, oldProps, newProps) {
@@ -110,8 +144,8 @@ export function createRenderer(options) {
     insert(el, container);
   }
 
-  function mountChildren(vnode, container, parent) {
-    vnode.forEach((v) => {
+  function mountChildren(children, container, parent) {
+    children.forEach((v) => {
       patch(null, v, container, parent);
     });
   }
