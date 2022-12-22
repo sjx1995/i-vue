@@ -10,6 +10,7 @@ import { Fragment, Text } from "./vnode";
 import { effect } from "../reactivity/effect";
 import { EMPTY_OBJECT } from "../shared";
 import { shouldUpdateComponent } from "./componentUpdateUtils";
+import { queueJobs } from "./scheduler";
 
 export function createRenderer(options) {
   function render(vnode, container) {
@@ -346,37 +347,42 @@ export function createRenderer(options) {
   }
 
   function setupRenderEffect(instance, vnode, container) {
-    instance.update = effect(() => {
-      if (!instance.isMounted) {
-        console.log("=== mount ===");
-        const { proxy } = instance;
-        // 执行完render函数之后，返回的是根节点的vnode对象
-        const subTree = instance.render.call(proxy);
-        instance.subTree = subTree;
+    instance.update = effect(
+      () => {
+        if (!instance.isMounted) {
+          const { proxy } = instance;
+          // 执行完render函数之后，返回的是根节点的vnode对象
+          const subTree = instance.render.call(proxy);
+          instance.subTree = subTree;
 
-        patch(null, subTree, container, instance, null);
+          patch(null, subTree, container, instance, null);
 
-        vnode.el = subTree.el;
+          vnode.el = subTree.el;
 
-        instance.isMounted = true;
-      } else {
-        console.log("=== update ===");
-        const { proxy, next, vnode } = instance;
+          instance.isMounted = true;
+        } else {
+          const { proxy, next, vnode } = instance;
 
-        if (next) {
-          next.el = vnode.el;
+          if (next) {
+            next.el = vnode.el;
 
-          updateComponentPreRender(instance, next);
+            updateComponentPreRender(instance, next);
+          }
+
+          // 执行完render函数之后，返回的是根节点的vnode对象
+          const subTree = instance.render.call(proxy);
+          const prevSubTree = instance.subTree;
+          instance.subTree = subTree;
+
+          patch(prevSubTree, subTree, container, instance, null);
         }
-
-        // 执行完render函数之后，返回的是根节点的vnode对象
-        const subTree = instance.render.call(proxy);
-        const prevSubTree = instance.subTree;
-        instance.subTree = subTree;
-
-        patch(prevSubTree, subTree, container, instance, null);
+      },
+      {
+        scheduler() {
+          queueJobs(instance.update);
+        },
       }
-    });
+    );
   }
 
   function updateComponentPreRender(instance, nextVNode) {

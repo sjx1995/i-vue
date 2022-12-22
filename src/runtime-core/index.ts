@@ -9,3 +9,4 @@ export { createTextNode } from "./vnode";
 export { getCurrentInstance } from "./component";
 export { inject, provide } from "./apiInject";
 export { createRenderer } from "./render";
+export { nextTick } from "./scheduler";
