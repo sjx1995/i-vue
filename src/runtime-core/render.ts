@@ -9,6 +9,7 @@ import { ShapeFlags } from "../shared/shapeFlags";
 import { Fragment, Text } from "./vnode";
 import { effect } from "../reactivity/effect";
 import { EMPTY_OBJECT } from "../shared";
+import { shouldUpdateComponent } from "./componentUpdateUtils";
 
 export function createRenderer(options) {
   function render(vnode, container) {
@@ -56,10 +57,6 @@ export function createRenderer(options) {
   }
 
   function patchElement(n1, n2, container, parent, anchor) {
-    console.log("patch element");
-    console.log(n1);
-    console.log(n2);
-
     const oldProps = n1.props || EMPTY_OBJECT;
     const newProps = n2.props || EMPTY_OBJECT;
 
@@ -313,7 +310,23 @@ export function createRenderer(options) {
   }
 
   function processComponent(n1, n2, container, parent) {
-    mountComponent(n2, container, parent);
+    if (!n1) {
+      mountComponent(n2, container, parent);
+    } else {
+      updateComponent(n1, n2);
+    }
+  }
+
+  function updateComponent(n1, n2) {
+    const instance = n1.component;
+    n2.component = instance;
+    if (shouldUpdateComponent(n1, n2)) {
+      instance.next = n2;
+      instance.update();
+    } else {
+      n2.el = n1.el;
+      instance.vnode = n2;
+    }
   }
 
   function mountComponent(vnode, container, parent) {
@@ -321,6 +334,7 @@ export function createRenderer(options) {
     // 实例上会存储必要的属性
     // 在instance上挂载vnode、type
     const instance = createComponentInstance(vnode, parent);
+    vnode.component = instance;
 
     // 初始化组件
     // 挂载setupState
@@ -332,8 +346,9 @@ export function createRenderer(options) {
   }
 
   function setupRenderEffect(instance, vnode, container) {
-    effect(() => {
+    instance.update = effect(() => {
       if (!instance.isMounted) {
+        console.log("=== mount ===");
         const { proxy } = instance;
         // 执行完render函数之后，返回的是根节点的vnode对象
         const subTree = instance.render.call(proxy);
@@ -345,7 +360,15 @@ export function createRenderer(options) {
 
         instance.isMounted = true;
       } else {
-        const { proxy } = instance;
+        console.log("=== update ===");
+        const { proxy, next, vnode } = instance;
+
+        if (next) {
+          next.el = vnode.el;
+
+          updateComponentPreRender(instance, next);
+        }
+
         // 执行完render函数之后，返回的是根节点的vnode对象
         const subTree = instance.render.call(proxy);
         const prevSubTree = instance.subTree;
@@ -354,6 +377,12 @@ export function createRenderer(options) {
         patch(prevSubTree, subTree, container, instance, null);
       }
     });
+  }
+
+  function updateComponentPreRender(instance, nextVNode) {
+    instance.vnode = nextVNode;
+    instance.next = null;
+    instance.props = nextVNode.props;
   }
 
   return {
