@@ -25,9 +25,20 @@ function parseChildren(context) {
     if (/[a-z]/i.test(s[1])) {
       node = parseElement(context);
     }
+  } else {
+    node = parseText(context);
   }
   nodes.push(node);
   return nodes;
+}
+
+function parseText(context) {
+  const content = sliceText(context, context.length);
+  advanceBy(context, content.length);
+  return {
+    type: NodeTypes.TEXT,
+    content,
+  };
 }
 
 function parseElement(context) {
@@ -58,7 +69,7 @@ function parseInterpolation(context) {
   );
   advanceBy(context, openDelimiter.length);
   const rawContentLength = closeIndex - openDelimiter.length;
-  const rawContent = context.source.slice(0, rawContentLength);
+  const rawContent = sliceText(context, rawContentLength);
   const content = rawContent.trim();
   advanceBy(
     context,
@@ -72,6 +83,10 @@ function parseInterpolation(context) {
       content,
     },
   };
+}
+
+function sliceText(context, length) {
+  return context.source.slice(0, length);
 }
 
 function advanceBy(context: any, length: number) {
